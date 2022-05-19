@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.AspNetCore.Mvc;
 using System;
 using ISO810_P2.Model;
@@ -11,7 +11,7 @@ namespace ISO810_P2.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private int[] Validation = new int[12] { 2, 10, 3, 11, 40, 11, 100, 10, 10, 10, 10, 10 };
+        private int[] Validation = new int[17] { 1, 3, 1, 11, 50, 40, 40, 1, 16, 16, 11, 16, 16, 16,4, 18, 18 };
         // GET: api/<FileController>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -44,6 +44,7 @@ namespace ISO810_P2.Controllers
                 }
                 using (var db = new SqliteDBContext())
                 {
+                    await db.Database.EnsureCreatedAsync();
                     using (var reader = new StreamReader(file.OpenReadStream()))
                     {
                         Int64 lineCounter = 0;
@@ -51,13 +52,17 @@ namespace ISO810_P2.Controllers
                         while ((line = reader.ReadLine()) != null)
                         {
                             lineCounter++;
-                            var data = line.Split("|");
+                            var data = line.Split(",");
+                            if(data.Length != Validation.Length)
+                            {
+                                return BadRequest("Número de columnas diferente a lo solicitado");
+                                              }
                             for (Int64 i = 0; i < data.Length; i++)
                             {
                                 Int64 columna = i + 1;
                                 if (data[i].Length > Validation[i])
                                 {
-                                    errors.Add("Error en linea #" + lineCounter + " Columna #" + columna + " Dato: '" + data[i] + "' Debe tener una longitud de " + Validation[i] + " Caracteres");
+                                    errors.Add("Error en línea #" + lineCounter + " columna #" + columna + " Dato: '" + data[i] + "' Debe tener una longitud de " + Validation[i] + " Caracteres");
                                 }
 
                             }
@@ -75,19 +80,26 @@ namespace ISO810_P2.Controllers
                                 Otros_ISR = data[9],
                                 RNC_Agente = data[10],
                                 Remuneracio_Otros_Empleados = data[11],
-                                Ingresos_Externos_ISR = "data",
-                                Salario_Infotep = "info",
-                                Tipo_Ingreso = "info",
-                                Regalia_Pascual = "informacio",
-                                Preaviso = "informacion"
+                                Ingresos_Externos_ISR = data[12],
+                                Salario_Infotep = data[13],
+                                Tipo_Ingreso = data[14],
+                                Regalia_Pascual = data[15],
+                                Preaviso = data[16]
                             };
                             db.Nominas.Add(Nomina);
                         }
-
-                        await db.SaveChangesAsync();
+                        if (errors.Count > 0)
+                        {
+                            return BadRequest(errors);
+                        }
+                        else
+                        {
+                            await db.SaveChangesAsync();
+                            return Ok("Done");
+                        }
                     }
                 }
-                return  Ok(errors);
+               
             }
             catch(Exception ex)
             {
