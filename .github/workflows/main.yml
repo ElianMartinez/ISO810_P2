@@ -21,6 +21,7 @@ jobs:
         APP_NAME: ${{ 'iso810' }}
       run: |
         pwd
+        ls
         cd ./
         docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
         heroku container:push web -a $APP_NAME
