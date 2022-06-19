@@ -1,11 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using ISO810_P2.Model;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.IO;
-using System;
-using Microsoft.AspNetCore.Http;
 
 namespace ISO810_P2.Controllers
 {
@@ -18,7 +13,7 @@ namespace ISO810_P2.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new string[] { "value1", "value2", "value3", "value4" };
         }
 
         // GET api/<FileController>/5
