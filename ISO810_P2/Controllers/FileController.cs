@@ -1,9 +1,11 @@
 
 using Microsoft.AspNetCore.Mvc;
-using System;
 using ISO810_P2.Model;
-using System.Text;
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.IO;
+using System;
+using Microsoft.AspNetCore.Http;
 
 namespace ISO810_P2.Controllers
 {
@@ -11,7 +13,7 @@ namespace ISO810_P2.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private int[] Validation = new int[17] { 1, 3, 1, 11, 50, 40, 40, 1, 16, 16, 11, 16, 16, 16,4, 18, 18 };
+        private int[] Validation = new int[17] { 1, 3, 1, 11, 50, 40, 40, 1, 16, 16, 11, 16, 16, 16, 4, 18, 18 };
         // GET: api/<FileController>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -28,14 +30,14 @@ namespace ISO810_P2.Controllers
 
         // POST api/<FileController>
         [HttpPost]
-        public async Task<IActionResult>  Post([FromForm]IFormFile file)
+        public async Task<IActionResult> Post([FromForm] IFormFile file)
         {
             List<string> errors = new List<string>();
             try
             {
-                if(file == null)
+                if (file == null)
                 {
-                     return BadRequest("Archivo no enviado");
+                    return BadRequest("Archivo no enviado");
                 }
                 string exst = Path.GetExtension(file.FileName).ToLower();
                 if (exst != ".txt" && exst != ".csv")
@@ -53,10 +55,10 @@ namespace ISO810_P2.Controllers
                         {
                             lineCounter++;
                             var data = line.Split(",");
-                            if(data.Length != Validation.Length)
+                            if (data.Length != Validation.Length)
                             {
                                 return BadRequest("Número de columnas diferente a lo solicitado");
-                                              }
+                            }
                             for (Int64 i = 0; i < data.Length; i++)
                             {
                                 Int64 columna = i + 1;
@@ -99,17 +101,17 @@ namespace ISO810_P2.Controllers
                         }
                     }
                 }
-               
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return BadRequest(ex.Message);  
+                return BadRequest(ex.Message);
             }
-          
+
         }
 
-     
 
-        
+
+
     }
 }
