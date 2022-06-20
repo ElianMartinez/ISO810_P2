@@ -11,9 +11,14 @@ namespace ISO810_P2.Controllers
         private int[] Validation = new int[17] { 1, 3, 1, 11, 50, 40, 40, 1, 16, 16, 11, 16, 16, 16, 4, 18, 18 };
         // GET: api/<FileController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<Nomina>> Get()
         {
-            return new string[] { "value1", "value2", "value3", "value4" };
+            using (var db = new SqliteDBContext())
+            {
+                await db.Database.EnsureCreatedAsync();
+                return db.Nominas.ToList();
+            }
+
         }
 
         // GET api/<FileController>/5
